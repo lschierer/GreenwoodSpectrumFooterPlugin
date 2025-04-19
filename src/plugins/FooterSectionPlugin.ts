@@ -18,7 +18,7 @@ export const Config = z
     debug: z.boolean(),
     isDevelopment: z.boolean().optional().default(false),
     repo: z.string(),
-    privacyPolicy: z.union([z.boolean().refine(val => !val), z.string()]),
+    privacypolicy: z.union([z.string(), z.literal('false'), z.literal(false)]),
     authors: z.union([z.literal('git'), z.string().array()]),
     branch: z.string().default('main').optional(),
   })
