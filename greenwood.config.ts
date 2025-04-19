@@ -4,7 +4,7 @@ import { greenwoodPluginImportRaw } from '@greenwood/plugin-import-raw';
 import type { Config } from '@greenwood/cli';
 
 // For local development, import from the TypeScript source
-import { TopHeaderSectionPlugin } from './src/plugins/TopHeaderSectionPlugin.ts';
+import { FooterSectionPlugin } from './src/plugins/FooterSectionPlugin.ts';
 
 const config: Config = {
   useTsc: true,
@@ -18,7 +18,7 @@ const config: Config = {
   },
   plugins: [
     greenwoodPluginImportRaw(),
-    TopHeaderSectionPlugin({
+    FooterSectionPlugin({
       sitetitle: 'My Site',
       toplevelsections: ['Home', 'About', 'Contact'],
     }),

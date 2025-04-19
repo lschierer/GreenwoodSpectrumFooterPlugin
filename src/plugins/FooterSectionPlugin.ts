@@ -19,7 +19,7 @@ export const Config = z.object({
 });
 export type Config = z.infer<typeof Config>;
 
-class TopHeaderSectionResource implements Resource {
+class FooterSectionResource implements Resource {
   private compilation: Compilation;
   private options: Config;
   private contentType;
@@ -32,7 +32,7 @@ class TopHeaderSectionResource implements Resource {
     const valid = Config.safeParse(options);
     if (!valid.success) {
       console.error(
-        `TopHeader cannot parse its options: ${valid.error.message}`,
+        `Footer cannot parse its options: ${valid.error.message}`,
         JSON.stringify(options)
       );
     }
@@ -162,7 +162,7 @@ class TopHeaderSectionResource implements Resource {
               type: 'element',
               tagName: 'link',
               properties: {
-                href: '/styles/TopHeader.css',
+                href: '/styles/Footer.css',
                 rel: 'stylesheet',
               },
               children: [],
@@ -210,10 +210,10 @@ class TopHeaderSectionResource implements Resource {
   }
 }
 
-export const TopHeaderSectionPlugin = (options = {}): ResourcePlugin => {
+export const FooterSectionPlugin = (options = {}): ResourcePlugin => {
   return {
     type: 'resource',
-    name: 'greenwood-speectrum-theme:TopHeaderSection',
-    provider: compilation => new TopHeaderSectionResource(compilation, options),
+    name: 'greenwood-speectrum-theme:FooterSection',
+    provider: compilation => new FooterSectionResource(compilation, options),
   };
 };
