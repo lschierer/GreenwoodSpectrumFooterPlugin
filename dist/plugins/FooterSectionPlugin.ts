@@ -18,7 +18,7 @@ export const Config = z
     debug: z.boolean(),
     isDevelopment: z.boolean().optional().default(false),
     repo: z.string(),
-    privacyPolicy: z.union([z.string(), z.literal('false'), z.literal(false)]),
+    privacyPolicy: z.union([z.string(), z.literal(false)]),
     authors: z.union([z.literal('git'), z.string().array()]),
     branch: z.string().default('main').optional(),
   })
@@ -195,7 +195,11 @@ class FooterSectionResource implements Resource {
   }
 
   protected getPrivacyPolicy = () => {
-    if (this.options && this.options.privacyPolicy) {
+    if (
+      this.options &&
+      this.options.privacyPolicy &&
+      this.options.privacyPolicy.localeCompare('false')
+    ) {
       return `
         <span class="privacy spectrum-Detail spectrum-Detail--serif spectrum-Detail--sizeM spectrum-Detail--light">
           <a href="${this.options.privacyPolicy}" class="spectrum-Link spectrum-Link--quiet spectrum-Link--primary">

@@ -4,7 +4,7 @@ export declare const Config: z.ZodObject<{
     debug: z.ZodBoolean;
     isDevelopment: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     repo: z.ZodString;
-    privacyPolicy: z.ZodUnion<[z.ZodString, z.ZodLiteral<"false">, z.ZodLiteral<false>]>;
+    privacyPolicy: z.ZodUnion<[z.ZodString, z.ZodLiteral<false>]>;
     authors: z.ZodUnion<[z.ZodLiteral<"git">, z.ZodArray<z.ZodString, "many">]>;
     branch: z.ZodOptional<z.ZodDefault<z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
