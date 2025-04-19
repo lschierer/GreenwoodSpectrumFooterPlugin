@@ -44,9 +44,11 @@ class FooterSectionResource implements Resource {
       );
     }
     this.options = valid.data as Config;
-    if (this.options.debug) {
+    if ('debug' in this.options && this.options.debug) {
       console.log(`this.options.repo is ${this.options.repo}`);
       console.log(`this.repo is ${this.repo}`);
+    } else {
+      this.options.debug = false;
     }
 
     this.contentType = 'text/html';

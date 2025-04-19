@@ -32,9 +32,12 @@ class FooterSectionResource {
             console.error(`FooterSectionResource cannot parse its options: ${valid.error.message}`, JSON.stringify(options));
         }
         this.options = valid.data;
-        if (this.options.debug) {
+        if ('debug' in this.options && this.options.debug) {
             console.log(`this.options.repo is ${this.options.repo}`);
             console.log(`this.repo is ${this.repo}`);
+        }
+        else {
+            this.options.debug = false;
         }
         this.contentType = 'text/html';
     }
