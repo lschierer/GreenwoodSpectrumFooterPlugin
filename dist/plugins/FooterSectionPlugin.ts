@@ -38,6 +38,7 @@ class FooterSectionResource implements Resource {
     if (!Object.keys(options).includes('this.options.debug')) {
       (options as Config).debug = true;
     }
+    console.log(`options is ${JSON.stringify(options)}`);
     const valid = Config.safeParse(options);
     if (!valid.success) {
       console.error(
