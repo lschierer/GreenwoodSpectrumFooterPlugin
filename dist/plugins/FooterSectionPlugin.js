@@ -13,7 +13,7 @@ export const Config = z
     debug: z.boolean(),
     isDevelopment: z.boolean().optional().default(false),
     repo: z.string(),
-    privacyPolicy: z.union([z.string(), z.literal(false)]),
+    privacyPolicy: z.union([z.boolean().refine(val => !val), z.string()]),
     authors: z.union([z.literal('git'), z.string().array()]),
     branch: z.string().default('main').optional(),
 })
@@ -167,7 +167,7 @@ class FooterSectionResource {
     }
     getPrivacyPolicy = () => {
         if (this.options &&
-            this.options.privacyPolicy &&
+            typeof this.options.privacyPolicy === 'string' &&
             this.options.privacyPolicy.localeCompare('false')) {
             return `
         <span class="privacy spectrum-Detail spectrum-Detail--serif spectrum-Detail--sizeM spectrum-Detail--light">
