@@ -38,15 +38,16 @@ export default {
       siteTitle: 'My Site',
       topLevelSections: ['Home', 'About', 'Contact'],
       siteLogo: 'path/to/logo.svg', // optional
-      debug: false
-    })
-  ]
+      debug: false,
+    }),
+  ],
 };
 ```
 
 ## Development
 
 This project uses:
+
 - TypeScript
 - ESLint with flat configuration
 - Prettier for code formatting
@@ -67,5 +68,6 @@ This project uses:
 This project uses ESLint with a flat configuration file (`eslint.config.js`) for linting TypeScript code. Prettier is used for code formatting, and as per Prettier's recommendation, it's called directly from package.json scripts rather than through an ESLint plugin.
 
 To maintain code quality:
+
 1. Run `pnpm lint` to check for linting issues
 2. Run `pnpm format` to format all files according to Prettier rules

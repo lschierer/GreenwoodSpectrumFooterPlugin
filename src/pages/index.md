@@ -3,6 +3,7 @@ title: Greenwood Spectrum Theme Pack
 imports:
   - /components/logo/logo.js type="module"
 ---
+
 <style>
   :root {
     --font-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe U", Roboto, Oxygen,
@@ -55,6 +56,7 @@ imports:
     margin-bottom: 125px;
   }
 </style>
+
 # Welcome to Greenwood!
 
 <x-logo></x-logo>

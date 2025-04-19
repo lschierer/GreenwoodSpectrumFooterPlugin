@@ -1,23 +1,21 @@
 {
-  "name": "topheader-plugin",
+  "name": "footersection-plugin",
   "private": true,
   "version": "1.0.1",
-  "description": "A plugin for Greenwood that adds a top header component",
+  "description": "A plugin for Greenwood that adds populates a footer component",
   "type": "module",
   "files": [
     "dist/"
   ],
   "exports": {
     ".": {
-      "types": "./dist/plugins/TopHeaderSectionPlugin.d.ts",
-      "import": "./dist/plugins/TopHeaderSectionPlugin.js",
-      "default": "./dist/plugins/TopHeaderSectionPlugin.js"
-    },
-    "./components/*": "./dist/components/*",
-    "./styles/*": "./dist/styles/*"
+      "types": "./dist/plugins/FooterSectionPlugin.d.ts",
+      "import": "./dist/plugins/FooterSectionPlugin.js",
+      "default": "./dist/plugins/FooterSectionPlugin.js"
+    }
   },
-  "main": "./dist/plugins/TopHeaderSectionPlugin.js",
-  "types": "./dist/plugins/TopHeaderSectionPlugin.d.ts",
+  "main": "./dist/plugins/FooterSectionPlugin.js",
+  "types": "./dist/plugins/FooterSectionPlugin.d.ts",
   "scripts": {
     "prepare": "rm -rf dist/ && mkdir -p dist/ && rsync -rv --exclude 'pages/' src/ dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "npm run prepare",
@@ -79,10 +77,8 @@
     "@spectrum-css/typography": "^8.1.0",
     "@spectrum-web-components/split-view": "^1.5.0",
     "@spectrum-web-components/theme": "^1.5.0",
-    "github-base.css": "link:remark-alerts/styles/github-base.css",
-    "github-colors-dark-class.css": "link:remark-alerts/styles/github-colors-dark-class.css",
-    "github-colors-light.css": "link:remark-alerts/styles/github-colors-light.css",
     "iconify-icon": "^2.3.0",
+    "isomorphic-git": "^1.30.1",
     "rehype-parse": "^9.0.1",
     "rehype-stringify": "^10.0.1",
     "unified": "^11.0.5",

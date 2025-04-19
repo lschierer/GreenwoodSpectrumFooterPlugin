@@ -4,7 +4,7 @@ import { greenwoodPluginImportRaw } from '@greenwood/plugin-import-raw';
 import type { Config } from '@greenwood/cli';
 
 // For local development, import from the TypeScript source
-import { FooterSectionPlugin } from './src/plugins/FooterSectionPlugin.ts';
+import { ExternalPluginFooterSection } from './src/plugins/FooterSectionPlugin.ts';
 
 const config: Config = {
   useTsc: true,
@@ -18,9 +18,12 @@ const config: Config = {
   },
   plugins: [
     greenwoodPluginImportRaw(),
-    FooterSectionPlugin({
-      sitetitle: 'My Site',
-      toplevelsections: ['Home', 'About', 'Contact'],
+    ExternalPluginFooterSection({
+      debug: true,
+      isDevelopment: true,
+      privacyPolicy: false,
+      authors: 'git',
+      repo: 'file://../..',
     }),
     greenwoodPluginPostCss({
       extendConfig: true,

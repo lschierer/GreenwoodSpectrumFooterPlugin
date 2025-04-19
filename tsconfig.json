@@ -34,7 +34,7 @@
     "noImplicitOverride": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    
+
     "noEmit": true
   },
   "include": ["src/**/*.ts", "src/**/*.js"],

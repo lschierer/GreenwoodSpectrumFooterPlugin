@@ -1,8 +1,8 @@
-@import "@spectrum-css/tokens";
-@import "@spectrum-css/typography";
-@import "@spectrum-css/sidenav";
-@import "@spectrum-web-components/styles/scale-medium.css";
-@import "@spectrum-web-components/styles/typography.css";
+@import '@spectrum-css/tokens';
+@import '@spectrum-css/typography';
+@import '@spectrum-css/sidenav';
+@import '@spectrum-web-components/styles/scale-medium.css';
+@import '@spectrum-web-components/styles/typography.css';
 
 * {
   /* Core Spectrum variables for sidenav */
