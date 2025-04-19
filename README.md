@@ -8,10 +8,10 @@ This package is designed to be used as a Git dependency. Add it to your project:
 
 ```bash
 # Using pnpm
-pnpm add github:schierer/GreenwoodSpectrumTopHeaderPlugin#main
+pnpm add github:schierer/GreenwoodSpectrumFooterPlugin#main
 
 # Using npm
-npm install github:schierer/GreenwoodSpectrumTopHeaderPlugin
+npm install github:schierer/GreenwoodSpectrumFooterPlugin
 ```
 
 Or add directly to your package.json:
@@ -19,7 +19,7 @@ Or add directly to your package.json:
 ```json
 {
   "dependencies": {
-    "topheader-plugin": "github:schierer/GreenwoodSpectrumTopHeaderPlugin#main"
+    "topheader-plugin": "github:schierer/GreenwoodSpectrumFooterPlugin#main"
   }
 }
 ```
@@ -30,11 +30,11 @@ Import and use the plugin in your Greenwood configuration:
 
 ```typescript
 // greenwood.config.ts
-import { TopHeaderSectionPlugin } from 'topheader-plugin';
+import { FooterSectionPlugin } from 'topheader-plugin';
 
 export default {
   plugins: [
-    TopHeaderSectionPlugin({
+    FooterSectionPlugin({
       siteTitle: 'My Site',
       topLevelSections: ['Home', 'About', 'Contact'],
       siteLogo: 'path/to/logo.svg', // optional
