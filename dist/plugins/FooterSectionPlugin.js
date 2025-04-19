@@ -297,6 +297,9 @@ class FooterSectionResource {
     }
 }
 const ExternalPluginFooterSection = (options = {}) => {
+    if (!options || Object.keys(options).length < 2) {
+        throw new Error(`invalid options object: ${JSON.stringify(options)}`);
+    }
     return [
         {
             type: 'resource',

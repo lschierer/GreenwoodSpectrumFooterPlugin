@@ -6,6 +6,9 @@ import css from '@eslint/css';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
+  {
+    ignores: ['dist/', 'public/', 'node_modules/'],
+  },
   { files: ['**/*.{js,mjs,cjs,ts}'], plugins: { js }, extends: ['js/recommended'] },
   {
     files: ['**/*.{js,mjs,cjs,ts}'],
