@@ -42,6 +42,7 @@ class FooterSectionResource implements Resource {
         `FooterSectionResource cannot parse its options: ${valid.error.message}`,
         JSON.stringify(options)
       );
+      throw new Error(`invalid options: ${JSON.stringify(options)}`);
     }
     this.options = valid.data as Config;
     if (this.options && 'debug' in this.options && this.options.debug) {

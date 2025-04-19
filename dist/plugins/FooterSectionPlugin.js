@@ -30,6 +30,7 @@ class FooterSectionResource {
         const valid = Config.safeParse(options);
         if (!valid.success) {
             console.error(`FooterSectionResource cannot parse its options: ${valid.error.message}`, JSON.stringify(options));
+            throw new Error(`invalid options: ${JSON.stringify(options)}`);
         }
         this.options = valid.data;
         if (this.options && 'debug' in this.options && this.options.debug) {
