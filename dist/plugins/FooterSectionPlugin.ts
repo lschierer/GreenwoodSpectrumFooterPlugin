@@ -13,14 +13,16 @@ import type { Compilation, Resource, ResourcePlugin } from '@greenwood/cli';
 import { z } from 'zod';
 
 // This must be a subset of the config schema in @hp-stuff/schemas
-export const Config = z.object({
-  debug: z.boolean(),
-  isDevelopment: z.boolean().optional().default(false),
-  repo: z.string(),
-  privacyPolicy: z.union([z.string(), z.literal('false'), z.literal(false)]),
-  authors: z.union([z.literal('git'), z.string().array()]),
-  branch: z.string().default('main').optional(),
-});
+export const Config = z
+  .object({
+    debug: z.boolean(),
+    isDevelopment: z.boolean().optional().default(false),
+    repo: z.string(),
+    privacyPolicy: z.union([z.string(), z.literal('false'), z.literal(false)]),
+    authors: z.union([z.literal('git'), z.string().array()]),
+    branch: z.string().default('main').optional(),
+  })
+  .strip();
 export type Config = z.infer<typeof Config>;
 
 class FooterSectionResource implements Resource {
@@ -42,7 +44,7 @@ class FooterSectionResource implements Resource {
         `FooterSectionResource cannot parse its options: ${valid.error.message}`,
         JSON.stringify(options)
       );
-      throw new Error(`invalid options: ${JSON.stringify(options)}`);
+      throw new Error(`invalid options: ${JSON.stringify(options)}; ${valid.error.message}`);
     }
     this.options = valid.data as Config;
     if (this.options && 'debug' in this.options && this.options.debug) {

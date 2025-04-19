@@ -8,14 +8,16 @@ import rehypeStringify from 'rehype-stringify';
 import { visit } from 'unist-util-visit';
 import { z } from 'zod';
 // This must be a subset of the config schema in @hp-stuff/schemas
-export const Config = z.object({
+export const Config = z
+    .object({
     debug: z.boolean(),
     isDevelopment: z.boolean().optional().default(false),
     repo: z.string(),
     privacyPolicy: z.union([z.string(), z.literal('false'), z.literal(false)]),
     authors: z.union([z.literal('git'), z.string().array()]),
     branch: z.string().default('main').optional(),
-});
+})
+    .strip();
 class FooterSectionResource {
     /* @ts-expect-error unused variable  */
     compilation;
@@ -30,7 +32,7 @@ class FooterSectionResource {
         const valid = Config.safeParse(options);
         if (!valid.success) {
             console.error(`FooterSectionResource cannot parse its options: ${valid.error.message}`, JSON.stringify(options));
-            throw new Error(`invalid options: ${JSON.stringify(options)}`);
+            throw new Error(`invalid options: ${JSON.stringify(options)}; ${valid.error.message}`);
         }
         this.options = valid.data;
         if (this.options && 'debug' in this.options && this.options.debug) {
