@@ -21,7 +21,7 @@ const config: Config = {
     ExternalPluginFooterSection({
       debug: true,
       isDevelopment: true,
-      privacyPolicy: false,
+      privacypolicy: false,
       authors: 'git',
       repo: 'file://../..',
     }),

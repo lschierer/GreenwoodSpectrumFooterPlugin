@@ -198,12 +198,12 @@ class FooterSectionResource implements Resource {
   protected getPrivacyPolicy = () => {
     if (
       this.options &&
-      typeof this.options.privacyPolicy === 'string' &&
-      this.options.privacyPolicy.localeCompare('false')
+      typeof this.options.privacypolicy === 'string' &&
+      this.options.privacypolicy.localeCompare('false')
     ) {
       return `
         <span class="privacy spectrum-Detail spectrum-Detail--serif spectrum-Detail--sizeM spectrum-Detail--light">
-          <a href="${this.options.privacyPolicy}" class="spectrum-Link spectrum-Link--quiet spectrum-Link--primary">
+          <a href="${this.options.privacypolicy}" class="spectrum-Link spectrum-Link--quiet spectrum-Link--primary">
             Privacy Policy
           </a>
         </span>
