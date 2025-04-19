@@ -38,7 +38,6 @@ class FooterSectionResource implements Resource {
     if (!Object.keys(options).includes('this.options.debug')) {
       (options as Config).debug = true;
     }
-    console.log(`options is ${JSON.stringify(options)}`);
     const valid = Config.safeParse(options);
     if (!valid.success) {
       console.error(
@@ -48,6 +47,14 @@ class FooterSectionResource implements Resource {
       throw new Error(`invalid options: ${JSON.stringify(options)}; ${valid.error.message}`);
     }
     this.options = valid.data as Config;
+    if (this.options.repo.startsWith('file://')) {
+      this.repo = this.options.repo.replace('file://', '');
+    } else {
+      this.repo = this.options.repo;
+    }
+    if (this.repo.startsWith('.')) {
+      this.repo = path.join(process.cwd(), this.repo);
+    }
     if (this.options && 'debug' in this.options && this.options.debug) {
       console.log(`this.options.repo is ${this.options.repo}`);
       console.log(`this.repo is ${this.repo}`);

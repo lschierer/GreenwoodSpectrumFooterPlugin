@@ -23,7 +23,7 @@ const config: Config = {
       isDevelopment: true,
       privacypolicy: false,
       authors: 'git',
-      repo: 'file://../..',
+      repo: 'file://.',
     }),
     greenwoodPluginPostCss({
       extendConfig: true,
