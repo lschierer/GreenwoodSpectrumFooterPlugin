@@ -23,6 +23,6 @@ export declare const Config: z.ZodObject<{
     branch?: string | undefined;
 }>;
 export type Config = z.infer<typeof Config>;
-declare const ExternalPluginFooterSection: (options: Config) => ResourcePlugin[];
+declare const ExternalPluginFooterSection: (options?: object) => ResourcePlugin[];
 export { ExternalPluginFooterSection };
 //# sourceMappingURL=FooterSectionPlugin.d.ts.map

@@ -343,7 +343,7 @@ class FooterSectionResource implements Resource {
   }
 }
 
-const ExternalPluginFooterSection = (options: Config): ResourcePlugin[] => {
+const ExternalPluginFooterSection = (options: object = {}): ResourcePlugin[] => {
   return [
     {
       type: 'resource',

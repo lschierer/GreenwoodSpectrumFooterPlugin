@@ -293,7 +293,7 @@ class FooterSectionResource {
         return name;
     }
 }
-const ExternalPluginFooterSection = (options) => {
+const ExternalPluginFooterSection = (options = {}) => {
     return [
         {
             type: 'resource',
