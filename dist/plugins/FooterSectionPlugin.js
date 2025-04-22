@@ -18,11 +18,28 @@ export const Config = z
     branch: z.string().default('main').optional(),
 })
     .strip();
+const RepoData = z.object({
+    path: z.string(),
+    headrev: z.string(),
+    authors: z
+        .object({
+        name: z.string(),
+        email: z.string().optional(),
+    })
+        .array(),
+    firstDate: z.date(),
+});
 class FooterSectionResource {
     /* @ts-expect-error unused variable  */
     compilation;
     options;
-    repo = process.cwd();
+    cacheLocation = path.join(process.cwd(), '.footer-section-plugin.cache.json');
+    repoData = {
+        headrev: '',
+        path: '',
+        authors: [],
+        firstDate: new Date(),
+    };
     contentType;
     constructor(compilation, options) {
         this.compilation = compilation;
@@ -36,23 +53,45 @@ class FooterSectionResource {
         }
         this.options = valid.data;
         if (this.options.repo.startsWith('file://')) {
-            this.repo = this.options.repo.replace('file://', '');
+            this.repoData.path = this.options.repo.replace('file://', '');
         }
         else {
-            this.repo = this.options.repo;
+            this.repoData.path = this.options.repo;
         }
-        if (this.repo.startsWith('.')) {
-            this.repo = path.join(process.cwd(), this.repo);
+        if (this.repoData.path.startsWith('.')) {
+            this.repoData.path = path.join(process.cwd(), this.repoData.path);
         }
         if (this.options && 'debug' in this.options && this.options.debug) {
             console.log(`this.options.repo is ${this.options.repo}`);
-            console.log(`this.repo is ${this.repo}`);
+            console.log(`this.repo is ${this.repoData.path}`);
         }
         else {
             this.options.debug = false;
         }
         this.contentType = 'text/html';
     }
+    writeCache = (data) => {
+        fs.writeFileSync(this.cacheLocation, JSON.stringify(data), { encoding: 'utf-8' });
+    };
+    getCache = async () => {
+        if (fs.existsSync(this.cacheLocation)) {
+            const data = fs.readFileSync(this.cacheLocation, { encoding: 'utf-8' });
+            const valid = RepoData.safeParse(data);
+            if (valid.success) {
+                const headCommit = await git.log({
+                    fs,
+                    dir: valid.data.path,
+                    ref: 'HEAD',
+                    depth: 1,
+                });
+                const found = headCommit.find(c => c.oid === valid.data.headrev);
+                if (found) {
+                    return valid.data;
+                }
+            }
+        }
+        return null;
+    };
     async shouldIntercept(url, request, response) {
         /*start work around for GetFrontmatter requiring async */
         await new Promise(resolve => setTimeout(resolve, 1));
@@ -108,21 +147,31 @@ class FooterSectionResource {
         })
             .use(rehypeStringify)
             .process(body);
+        this.writeCache(this.repoData);
         return new Response(String(file), {
             headers: response.headers,
         });
     }
     // Shared method to get commits from all branches
-    async getAllCommits() {
+    async populateCache() {
         if (this.options.debug) {
-            console.log(`Getting all commits from repository: ${this.repo}`);
+            console.log(`Getting all commits from repository: ${this.repoData.path}`);
         }
         const allCommits = [];
         try {
+            const head = await git.log({
+                fs,
+                dir: this.repoData.path,
+                ref: 'HEAD',
+                depth: 1,
+            });
+            if (head.length) {
+                this.repoData.headrev = head[0].oid;
+            }
             // First, get all branches
             const branches = await git.listBranches({
                 fs,
-                dir: this.repo,
+                dir: this.repoData.path,
             });
             if (this.options.debug) {
                 console.log(`Found branches: ${branches.join(', ')}`);
@@ -132,7 +181,7 @@ class FooterSectionResource {
                 try {
                     const branchCommits = await git.log({
                         fs,
-                        dir: this.repo,
+                        dir: this.repoData.path,
                         ref: branch,
                         depth: 500, // Increase depth to get more history
                     });
@@ -148,7 +197,7 @@ class FooterSectionResource {
             try {
                 const headCommits = await git.log({
                     fs,
-                    dir: this.repo,
+                    dir: this.repoData.path,
                     ref: 'HEAD',
                     depth: 1000,
                 });
@@ -170,9 +219,38 @@ class FooterSectionResource {
         for (const commit of allCommits) {
             if (!uniqueCommits.has(commit.oid)) {
                 uniqueCommits.set(commit.oid, commit);
+                const cachedUnixDate = Math.floor(this.repoData.firstDate.getTime() / 1000);
+                if (commit.commit.author.timestamp < cachedUnixDate) {
+                    this.repoData.firstDate = new Date(commit.commit.author.timestamp * 1000);
+                }
+                const ae = this.repoData.authors.find(a => {
+                    if (!commit.commit.author.name.localeCompare(a.name)) {
+                        if (commit.commit.author.email.length && a.email) {
+                            if (!commit.commit.author.email.localeCompare(a.email)) {
+                                return true;
+                            }
+                        }
+                        else if (!commit.commit.author.email.length && a.email === undefined) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                if (ae === undefined) {
+                    if (commit.commit.author.email.length) {
+                        this.repoData.authors.push({
+                            name: commit.commit.author.name,
+                            email: commit.commit.author.email,
+                        });
+                    }
+                    else {
+                        this.repoData.authors.push({
+                            name: commit.commit.author.name,
+                        });
+                    }
+                }
             }
         }
-        return Array.from(uniqueCommits.values());
     }
     getPrivacyPolicy = () => {
         if (this.options &&
@@ -194,20 +272,23 @@ class FooterSectionResource {
         if (this.options.debug) {
             console.log(`start of getFirstYear`);
         }
-        let firstYear = new Date();
-        const commits = await this.getAllCommits();
-        for (const entry of commits) {
-            const entryDate = new Date(entry.commit.author.timestamp * 1000);
-            if (entryDate < firstYear) {
-                firstYear = entryDate;
+        const cache = await this.getCache();
+        if (cache && cache.headrev == this.repoData.headrev && cache.path == this.repoData.path) {
+            const repoDataDate = Math.floor(this.repoData.firstDate.getTime() / 1000);
+            const cachedDate = Math.floor(cache.firstDate.getTime() / 1000);
+            if (cachedDate < repoDataDate) {
+                this.repoData = cache;
+            }
+            else {
+                await this.populateCache();
             }
         }
-        return firstYear;
+        else {
+            await this.populateCache();
+        }
+        return this.repoData.firstDate;
     };
     getAuthors = async () => {
-        if (this.options.debug) {
-            console.log(`start of getAuthors`);
-        }
         const repoAuthors = new Set();
         if (this.options && this.options.authors !== 'git' && Array.isArray(this.options.authors)) {
             for (const author of this.options.authors) {
@@ -215,58 +296,50 @@ class FooterSectionResource {
             }
         }
         else {
-            // Check if .mailmap exists in the repo
-            const mailmapPath = path.join(this.repo, '.mailmap');
+            const mailmapPath = path.join(this.repoData.path, '.mailmap');
             const hasMailmap = fs.existsSync(mailmapPath);
             if (this.options.debug && hasMailmap) {
                 console.log(`Found .mailmap file at ${mailmapPath}`);
             }
-            // Get all commits
-            const commits = await this.getAllCommits();
-            // Process commits with mailmap if available
+            const cache = await this.getCache();
+            if (cache && cache.headrev == this.repoData.headrev && cache.path == this.repoData.path) {
+                const repoDataDate = Math.floor(this.repoData.firstDate.getTime() / 1000);
+                const cachedDate = Math.floor(cache.firstDate.getTime() / 1000);
+                if (cachedDate < repoDataDate) {
+                    this.repoData = cache;
+                }
+                else {
+                    await this.populateCache();
+                }
+            }
+            else {
+                await this.populateCache();
+            }
             if (hasMailmap) {
                 try {
-                    // Read the mailmap file
                     const mailmapContent = fs.readFileSync(mailmapPath, 'utf8');
                     const mailmapEntries = this.parseMailmap(mailmapContent);
-                    if (this.options.debug) {
-                        console.log(`Parsed ${mailmapEntries.size} entries from .mailmap`);
-                    }
-                    // Apply mailmap to normalize author names
-                    for (const entry of commits) {
-                        if (typeof entry.commit.author.name === 'string' &&
-                            typeof entry.commit.author.email === 'string') {
-                            const normalizedName = this.getNormalizedAuthor(entry.commit.author.name, entry.commit.author.email, mailmapEntries);
-                            repoAuthors.add(normalizedName);
-                        }
-                        else if (typeof entry.commit.author.name === 'string') {
-                            repoAuthors.add(entry.commit.author.name);
-                        }
+                    for (const author of this.repoData.authors) {
+                        repoAuthors.add(this.getNormalizedAuthor(author.name, author.email ?? '', mailmapEntries));
                     }
                 }
                 catch (error) {
                     console.warn(`Error processing .mailmap file:`, error);
                     // Fallback to regular author processing
-                    for (const entry of commits) {
-                        if (typeof entry.commit.author.name === 'string') {
-                            repoAuthors.add(entry.commit.author.name);
-                        }
+                    for (const a of this.repoData.authors) {
+                        repoAuthors.add(a.name);
                     }
                 }
             }
             else {
-                // No mailmap, just use author names as is
-                for (const entry of commits) {
-                    if (typeof entry.commit.author.name === 'string') {
-                        repoAuthors.add(entry.commit.author.name);
-                    }
+                for (const a of this.repoData.authors) {
+                    repoAuthors.add(a.name);
                 }
             }
+            for (const a of this.repoData.authors) {
+                repoAuthors.add(a.name);
+            }
         }
-        if (this.options.debug) {
-            console.log(`Found authors: ${[...repoAuthors].join(', ')}`);
-        }
-        return [...repoAuthors];
     };
     // Parse mailmap file into a map of email -> canonical name
     parseMailmap(content) {
