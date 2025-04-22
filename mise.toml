@@ -1,4 +1,4 @@
 [tools]
 just = "latest"
 node = "lts"
-pnpm = "10.8"
+pnpm = "10.9"
