@@ -376,10 +376,8 @@ class FooterSectionResource implements Resource {
           repoAuthors.add(a.name);
         }
       }
-      for (const a of this.repoData.authors) {
-        repoAuthors.add(a.name);
-      }
     }
+
     return [...repoAuthors];
   };
 
