@@ -380,7 +380,7 @@ class FooterSectionResource implements Resource {
         repoAuthors.add(a.name);
       }
     }
-    return repoAuthors;
+    return [...repoAuthors];
   };
 
   // Parse mailmap file into a map of email -> canonical name

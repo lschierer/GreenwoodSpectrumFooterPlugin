@@ -347,7 +347,7 @@ class FooterSectionResource {
                 repoAuthors.add(a.name);
             }
         }
-        return repoAuthors;
+        return [...repoAuthors];
     };
     // Parse mailmap file into a map of email -> canonical name
     parseMailmap(content) {
