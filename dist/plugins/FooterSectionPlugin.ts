@@ -338,6 +338,9 @@ class FooterSectionResource implements Resource {
         const repoDataDate = Math.floor(this.repoData.firstDate.getTime() / 1000);
         const cachedDate = Math.floor(cache.firstDate.getTime() / 1000);
         if (cachedDate < repoDataDate) {
+          if (this.options.debug) {
+            console.log(`using cached data, authors are ${JSON.stringify(cache.authors)}`);
+          }
           this.repoData = cache;
         } else {
           await this.populateCache();
@@ -351,9 +354,15 @@ class FooterSectionResource implements Resource {
           const mailmapContent = fs.readFileSync(mailmapPath, 'utf8');
           const mailmapEntries = this.parseMailmap(mailmapContent);
           for (const author of this.repoData.authors) {
-            repoAuthors.add(
-              this.getNormalizedAuthor(author.name, author.email ?? '', mailmapEntries)
+            const normalized = this.getNormalizedAuthor(
+              author.name,
+              author.email ?? '',
+              mailmapEntries
             );
+            if (this.options.debug) {
+              console.log(`adding ${JSON.stringify(author)} normalized to ${normalized}`);
+            }
+            repoAuthors.add(normalized);
           }
         } catch (error) {
           console.warn(`Error processing .mailmap file:`, error);
@@ -371,6 +380,7 @@ class FooterSectionResource implements Resource {
         repoAuthors.add(a.name);
       }
     }
+    return repoAuthors;
   };
 
   // Parse mailmap file into a map of email -> canonical name
