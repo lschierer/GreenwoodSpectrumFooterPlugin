@@ -44,7 +44,7 @@ class FooterSectionResource {
     constructor(compilation, options) {
         this.compilation = compilation;
         if (!Object.keys(options).includes('this.options.debug')) {
-            options.debug = true;
+            options.debug = false;
         }
         const valid = Config.safeParse(options);
         if (!valid.success) {
@@ -61,12 +61,9 @@ class FooterSectionResource {
         if (this.repoData.path.startsWith('.')) {
             this.repoData.path = path.join(process.cwd(), this.repoData.path);
         }
-        if (this.options && 'debug' in this.options && this.options.debug) {
+        if (this.options && this.options.debug) {
             console.log(`this.options.repo is ${this.options.repo}`);
             console.log(`this.repo is ${this.repoData.path}`);
-        }
-        else {
-            this.options.debug = false;
         }
         this.contentType = 'text/html';
     }
